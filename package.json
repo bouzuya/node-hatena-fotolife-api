@@ -34,6 +34,7 @@
     "sinon": "^1.10.3"
   },
   "dependencies": {
+    "mime": "^1.2.11",
     "request": "^2.40.0",
     "wsse": "0.0.3",
     "xml2js": "^0.4.4"

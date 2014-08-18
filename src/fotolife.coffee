@@ -2,6 +2,7 @@ fs = require 'fs'
 request = require 'request'
 wsse = require 'wsse'
 xml2js = require 'xml2js'
+mime = require 'mime'
 
 # - POST   PostURI (/atom/post)                => Fotolife#create
 # - PUT    EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#update
@@ -19,9 +20,9 @@ class Fotolife
 
   # POST PostURI (/atom/post)
   # options:
-  # - file: image file path
-  # - title: image title
-  # - type: content-type
+  # - file: image file path (required)
+  # - title: image title (optional)
+  # - type: content-type (optional)
   # - dc:subject: folder name TODO
   # - generator: tool name TODO
   # callback:
@@ -31,8 +32,8 @@ class Fotolife
     # TODO: check required properties
     method = 'post'
     path = '/atom/post'
-    title = options.title
-    type = options.type
+    title = options.title ? ''
+    type = options.type ? mime(options.file)
     encoded = fs.readFileSync(options.file).toString('base64')
     # TODO: XML encode
     body = """
