@@ -89,7 +89,7 @@ class Fotolife
     method = 'get'
     path = '/atom/edit/' + options.id
     # TODO: check res.statusCode is 200
-    @_request { method, path, body }, callback
+    @_request { method, path }, callback
 
   # GET FeedURI (/atom/feed)
   index: (options, callback) ->
