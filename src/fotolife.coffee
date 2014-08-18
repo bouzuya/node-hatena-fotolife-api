@@ -33,7 +33,7 @@ class Fotolife
     method = 'post'
     path = '/atom/post'
     title = options.title ? ''
-    type = options.type ? mime(options.file)
+    type = options.type ? mime.lookup(options.file)
     encoded = fs.readFileSync(options.file).toString('base64')
     # TODO: XML encode
     body = """
