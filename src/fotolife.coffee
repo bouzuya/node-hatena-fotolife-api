@@ -62,12 +62,12 @@ class Fotolife
     method = 'post'
     path = '/atom/edit/' + options.id
     title = options.title
-    # TODO: XML encode
-    body = """
-      <entry xmlns="http://purl.org/atom/ns#">
-        <title>#{title}</title>
-      </entry>
-    """
+    body = @_toXml
+      entry:
+        $:
+          xmlns: 'http://purl.org/atom/ns#'
+        title:
+          _: title
     # TODO: check res.statusCode is 200
     @_request { method, path, body }, callback
 
