@@ -14,8 +14,7 @@ var fotolife = require('hatena-fotolife-api');
 var client = fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
 client.create({
   title: 'bouzuya\'s icon',
-  type: 'image/png',
-  content: './bouzuya.png'
+  file: './bouzuya.png'
 }, function(err) {
   if (err) {
     console.error(err);

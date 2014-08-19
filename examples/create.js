@@ -9,8 +9,7 @@ var client = fotolife({
 // POST PostURI (/atom/post)
 client.create({
   title: 'bouzuya\'s icon',
-  type: 'image/png',
-  content: './bouzuya.png'
+  file: './bouzuya.png'
 }, function(err, res) {
   if (err) {
     console.error(err);
