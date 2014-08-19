@@ -18,10 +18,6 @@ class Fotolife
     @_apikey = options.apikey
     @_wsse = wsse()
 
-  _toXml: (json) ->
-    builder = new xml2js.Builder()
-    builder.buildObject json
-
   # POST PostURI (/atom/post)
   # options:
   # - file: image file path (required)
@@ -122,5 +118,9 @@ class Fotolife
       parser.parseString res.body, (err, result) ->
         return callback(err) if err?
         callback null, result
+
+  _toXml: (json) ->
+    builder = new xml2js.Builder()
+    builder.buildObject json
 
 module.exports = Fotolife
