@@ -18,6 +18,10 @@ class Fotolife
     @_apikey = options.apikey
     @_wsse = wsse()
 
+  _toXml: (json) ->
+    builder = new xml2js.Builder()
+    builder.buildObject json
+
   # POST PostURI (/atom/post)
   # options:
   # - file: image file path (required)
@@ -29,19 +33,24 @@ class Fotolife
   # - err: error
   # - res: response
   create: (options, callback) ->
-    # TODO: check required properties
+    # validate options
+    return callback(new Error('options.file is required')) unless options.file?
     method = 'post'
     path = '/atom/post'
     title = options.title ? ''
     type = options.type ? mime.lookup(options.file)
     encoded = fs.readFileSync(options.file).toString('base64')
-    # TODO: XML encode
-    body = """
-      <entry xmlns="http://purl.org/atom/ns#">
-        <title>#{title}</title>
-        <content mode="base64" type="#{type}">#{encoded}</content>
-      </entry>
-    """
+    body = @_toXml
+      entry:
+        $:
+          xmlns: 'http://purl.org/atom/ns#'
+        title:
+          _: title
+        content:
+          $:
+            mode: 'base64'
+            type: type
+          _: encoded
     # TODO: check res.statusCode is 201
     @_request { method, path, body }, callback
 
