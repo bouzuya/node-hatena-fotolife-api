@@ -1,8 +1,8 @@
 fs = require 'fs'
+mime = require 'mime'
 request = require 'request'
 wsse = require 'wsse'
 xml2js = require 'xml2js'
-mime = require 'mime'
 
 # - POST   PostURI (/atom/post)                => Fotolife#create
 # - PUT    EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#update
@@ -10,6 +10,7 @@ mime = require 'mime'
 # - GET    EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#show
 # - GET    FeedURI (/atom/feed)                => Fotolife#index
 class Fotolife
+
   @BASE_URL = 'http://f.hatena.ne.jp'
 
   constructor: (options) ->
@@ -20,33 +21,34 @@ class Fotolife
 
   # POST PostURI (/atom/post)
   # options:
-  # - file: image file path (required)
-  # - title: image title (optional)
-  # - type: content-type (optional)
-  # - dc:subject: folder name TODO
-  # - generator: tool name TODO
+  # - file     : 'content'. image file path. (required)
+  # - title    : 'title'. image title. default `''`. (optional)
+  # - type     : 'type'. content-type. default `mime.lookup(file)`. (optional)
+  # - folder   : 'dc:subject'. folder name. default `undefined`. (optional)
+  # - generator: 'generator'. tool name. default `undefined`. (optional)
   # callback:
   # - err: error
   # - res: response
-  create: (options, callback) ->
-    # validate options
-    return callback(new Error('options.file is required')) unless options.file?
+  create: ({ file, title, type, folder, generator }, callback) ->
+    return callback(new Error('options.file is required')) unless file?
+    title = title ? ''
+    type = type ? mime.lookup(file)
+    encoded = fs.readFileSync(file).toString('base64')
+    # params
     method = 'post'
     path = '/atom/post'
-    title = options.title ? ''
-    type = options.type ? mime.lookup(options.file)
-    encoded = fs.readFileSync(options.file).toString('base64')
-    body = @_toXml
-      entry:
+    body = entry:
+      $:
+        xmlns: 'http://purl.org/atom/ns#'
+      title:
+        _: title
+      content:
         $:
-          xmlns: 'http://purl.org/atom/ns#'
-        title:
-          _: title
-        content:
-          $:
-            mode: 'base64'
-            type: type
-          _: encoded
+          mode: 'base64'
+          type: type
+        _: encoded
+    body.entry['dc:subject'] = { _: folder } if folder?
+    body.entry.generator = { _: generator } if generator?
     # TODO: check res.statusCode is 201
     @_request { method, path, body }, callback
 
@@ -62,7 +64,7 @@ class Fotolife
     method = 'post'
     path = '/atom/edit/' + options.id
     title = options.title
-    body = @_toXml
+    body =
       entry:
         $:
           xmlns: 'http://purl.org/atom/ns#'
@@ -111,6 +113,7 @@ class Fotolife
     options.headers =
       'Authorization': 'WSSE profile="UsernameToken"',
       'X-WSSE': 'UsernameToken ' + token
+    options.body = @_toXml(options.body) if options.body?
     delete options.path
     request options, (err, res) ->
       return callback(err) if err?

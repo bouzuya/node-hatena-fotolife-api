@@ -9,6 +9,55 @@ describe 'fotolife', ->
   afterEach ->
     @sinon.restore()
 
+  describe 'create', ->
+    beforeEach ->
+      Fotolife = require '../src/fotolife'
+      @request = @sinon.stub Fotolife.prototype, '_request', -> null
+      @fotolife = new Fotolife
+        type: 'wsse'
+        username: 'username'
+        apikey: 'apikey'
+
+    describe 'no file options', ->
+      it 'returns error', (done) ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.create {}, (e) =>
+          assert @request.callCount is 0
+          assert e instanceof Error
+          done()
+
+    describe 'default options', ->
+      it 'works', ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.create
+          file: pngfile
+        , -> null
+        assert @request.firstCall.args[0].method is 'post'
+        assert @request.firstCall.args[0].path is '/atom/post'
+        body = @request.firstCall.args[0].body
+        assert body.entry.title._ is ''
+        assert body.entry.content.$.type is 'image/png'
+        assert body.entry['dc:subject'] is undefined
+        assert body.entry.generator is undefined
+
+    describe 'all options', ->
+      it 'works', ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.create
+          file: pngfile
+          title: 'TITLE'
+          type: 'TYPE'
+          folder: 'FOLDER'
+          generator: 'GENERATOR'
+        , -> null
+        assert @request.firstCall.args[0].method is 'post'
+        assert @request.firstCall.args[0].path is '/atom/post'
+        body = @request.firstCall.args[0].body
+        assert body.entry.title._ is 'TITLE'
+        assert body.entry.content.$.type is 'TYPE'
+        assert body.entry['dc:subject']._ is 'FOLDER'
+        assert body.entry.generator._ is 'GENERATOR'
+
   describe '_toXml', ->
     it 'works', ->
       Fotolife = require '../src/fotolife'
