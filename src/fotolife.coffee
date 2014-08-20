@@ -54,16 +54,16 @@ class Fotolife
 
   # PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
   # options:
-  # - id: XXXXXXXXXXXXXX
-  # - title: title
+  # - id    : image id. (required)
+  # - title : 'title'. image title. (required)
   # callback:
   # - err: error
   # - res: response
-  update: (options, callback) ->
-    # TODO: check required properties
-    method = 'post'
-    path = '/atom/edit/' + options.id
-    title = options.title
+  update: ({ id, title }, callback) ->
+    return callback(new Error('options.id is required')) unless id?
+    return callback(new Error('options.title is required')) unless title?
+    method = 'put'
+    path = '/atom/edit/' + id
     body =
       entry:
         $:

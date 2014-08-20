@@ -58,6 +58,40 @@ describe 'fotolife', ->
         assert body.entry['dc:subject']._ is 'FOLDER'
         assert body.entry.generator._ is 'GENERATOR'
 
+  describe 'update', ->
+    beforeEach ->
+      Fotolife = require '../src/fotolife'
+      @request = @sinon.stub Fotolife.prototype, '_request', -> null
+      @fotolife = new Fotolife
+        type: 'wsse'
+        username: 'username'
+        apikey: 'apikey'
+
+    describe 'no id options', ->
+      it 'returns error', (done) ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.update {}, (e) =>
+          assert @request.callCount is 0
+          assert e instanceof Error
+          done()
+
+    describe 'no title options', ->
+      it 'returns error', (done) ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.update { id: 123 }, (e) =>
+          assert @request.callCount is 0
+          assert e instanceof Error
+          done()
+
+    describe 'all options', ->
+      it 'works', ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.update { id: 123, title: 'TITLE' }, -> null
+        assert @request.firstCall.args[0].method is 'put'
+        assert @request.firstCall.args[0].path is '/atom/edit/123'
+        body = @request.firstCall.args[0].body
+        assert body.entry.title._ is 'TITLE'
+
   describe '_toXml', ->
     it 'works', ->
       Fotolife = require '../src/fotolife'
