@@ -5,19 +5,17 @@ sinon = require 'sinon'
 describe 'fotolife', ->
   beforeEach ->
     @sinon = sinon.sandbox.create()
+    Fotolife = require '../src/fotolife'
+    @request = @sinon.stub Fotolife.prototype, '_request', -> null
+    @fotolife = new Fotolife
+      type: 'wsse'
+      username: 'username'
+      apikey: 'apikey'
 
   afterEach ->
     @sinon.restore()
 
   describe 'create', ->
-    beforeEach ->
-      Fotolife = require '../src/fotolife'
-      @request = @sinon.stub Fotolife.prototype, '_request', -> null
-      @fotolife = new Fotolife
-        type: 'wsse'
-        username: 'username'
-        apikey: 'apikey'
-
     describe 'no file options', ->
       it 'returns error', (done) ->
         pngfile = path.resolve __dirname, '../examples/bouzuya.png'
@@ -59,14 +57,6 @@ describe 'fotolife', ->
         assert body.entry.generator._ is 'GENERATOR'
 
   describe 'update', ->
-    beforeEach ->
-      Fotolife = require '../src/fotolife'
-      @request = @sinon.stub Fotolife.prototype, '_request', -> null
-      @fotolife = new Fotolife
-        type: 'wsse'
-        username: 'username'
-        apikey: 'apikey'
-
     describe 'no id options', ->
       it 'returns error', (done) ->
         pngfile = path.resolve __dirname, '../examples/bouzuya.png'
@@ -93,14 +83,6 @@ describe 'fotolife', ->
         assert body.entry.title._ is 'TITLE'
 
   describe 'destroy', ->
-    beforeEach ->
-      Fotolife = require '../src/fotolife'
-      @request = @sinon.stub Fotolife.prototype, '_request', -> null
-      @fotolife = new Fotolife
-        type: 'wsse'
-        username: 'username'
-        apikey: 'apikey'
-
     describe 'no id options', ->
       it 'returns error', (done) ->
         pngfile = path.resolve __dirname, '../examples/bouzuya.png'
@@ -114,6 +96,22 @@ describe 'fotolife', ->
         pngfile = path.resolve __dirname, '../examples/bouzuya.png'
         @fotolife.destroy { id: 123 }, -> null
         assert @request.firstCall.args[0].method is 'delete'
+        assert @request.firstCall.args[0].path is '/atom/edit/123'
+
+  describe 'show', ->
+    describe 'no id options', ->
+      it 'returns error', (done) ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.show {}, (e) =>
+          assert @request.callCount is 0
+          assert e instanceof Error
+          done()
+
+    describe 'all options', ->
+      it 'works', ->
+        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        @fotolife.show { id: 123 }, -> null
+        assert @request.firstCall.args[0].method is 'get'
         assert @request.firstCall.args[0].path is '/atom/edit/123'
 
   describe '_toXml', ->

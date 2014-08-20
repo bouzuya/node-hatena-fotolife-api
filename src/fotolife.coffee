@@ -88,14 +88,14 @@ class Fotolife
 
   # GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
   # options:
-  # - id: XXXXXXXXXXXXXX
+  # - id: image id. (required)
   # callback:
   # - err: error
   # - res: response
-  show: (options, callback) ->
-    # TODO: check required properties
+  show: ({ id }, callback) ->
+    return callback(new Error('options.id is required')) unless id?
     method = 'get'
-    path = '/atom/edit/' + options.id
+    path = '/atom/edit/' + id
     # TODO: check res.statusCode is 200
     @_request { method, path }, callback
 
