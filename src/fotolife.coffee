@@ -75,14 +75,14 @@ class Fotolife
 
   # DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
   # options:
-  # - id: XXXXXXXXXXXXXX
+  # - id: image id. (required)
   # callback:
   # - err: error
   # - res: response
-  destroy: (options, callback) ->
-    # TODO: check required properties
+  destroy: ({ id }, callback) ->
+    return callback(new Error('options.id is required')) unless id?
     method = 'delete'
-    path = '/atom/edit/' + options.id
+    path = '/atom/edit/' + id
     # TODO: check res.statusCode is 200
     @_request { method, path }, callback
 
