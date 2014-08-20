@@ -100,6 +100,10 @@ class Fotolife
     @_request { method, path }, callback
 
   # GET FeedURI (/atom/feed)
+  # options:
+  # callback:
+  # - err: error
+  # - res: response
   index: (options, callback) ->
     callback = options unless callback?
     method = 'get'
