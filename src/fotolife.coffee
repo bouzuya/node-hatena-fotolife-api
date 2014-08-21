@@ -117,19 +117,36 @@ class Fotolife
     # TODO: check res.statusCode is 200
     @_request { method, path }, callback
 
-  _request: (options, callback) ->
+  _request: ({ method, path, body }, callback) ->
+    callback = callback ? (->)
     token = @_wsse.getUsernameToken @_username, @_apikey, nonceBase64: true
-    options.url = Fotolife.BASE_URL + options.path
-    options.headers =
+    params = {}
+    params.method = method
+    params.url = Fotolife.BASE_URL + path
+    params.headers =
       'Authorization': 'WSSE profile="UsernameToken"',
       'X-WSSE': 'UsernameToken ' + token
-    options.body = @_toXml(options.body) if options.body?
-    delete options.path
-    request options, (err, res) ->
-      return callback(err) if err?
-      @_toJson res.body, (err, result) ->
-        return callback(err) if err?
-        callback null, result
+    promise = if body? then @_toXml(body) else Promise.resolve(null)
+    promise
+      .then (body) =>
+        params.body = body if body?
+        @_requestPromise params
+      .then (res) =>
+        @_toJson res.body
+      .then (json) ->
+        callback(null, json)
+        json
+      .then null, (err) ->
+        callback(err)
+        err
+
+  _requestPromise: (params) ->
+    new Promise (resolve, reject) ->
+      request params, (err, res) ->
+        if err?
+          reject err
+        else
+          resolve res
 
   _toJson: (xml) ->
     new Promise (resolve, reject) ->
