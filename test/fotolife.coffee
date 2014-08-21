@@ -114,10 +114,62 @@ describe 'fotolife', ->
         assert @request.firstCall.args[0].method is 'get'
         assert @request.firstCall.args[0].path is '/atom/edit/123'
 
+  describe '_toJson', ->
+    describe 'single elements', ->
+      it 'works', (done) ->
+        xml = '''
+          <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <entry xmlns="http://purl.org/atom/ns#">
+            <title>&lt;TITLE</title>
+            <content mode="base64" type="&quot;TYPE">&lt;ENCODED</content>
+          </entry>
+        '''
+        Fotolife = require '../src/fotolife'
+        Fotolife.prototype._toJson xml, (err, json) ->
+          assert.deepEqual json,
+            entry:
+              $:
+                xmlns: 'http://purl.org/atom/ns#'
+              title:
+                _: '<TITLE'
+              content:
+                $:
+                  mode: 'base64'
+                  type: '"TYPE'
+                _: '<ENCODED'
+          done()
+
+    describe 'multiple elements', ->
+      it 'works', (done) ->
+        xml = '''
+          <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <entry xmlns="http://purl.org/atom/ns#">
+            <title attr="ATTR1">&lt;TITLE1</title>
+            <title attr="ATTR2">&lt;TITLE2</title>
+          </entry>
+        '''
+        Fotolife = require '../src/fotolife'
+        Fotolife.prototype._toJson xml, (err, json) ->
+          assert.deepEqual json,
+            entry:
+              $:
+                xmlns: 'http://purl.org/atom/ns#'
+              title:
+                [
+                  $:
+                    attr: 'ATTR1'
+                  _: '<TITLE1'
+                ,
+                  $:
+                    attr: 'ATTR2'
+                  _: '<TITLE2'
+                ]
+          done()
+
   describe '_toXml', ->
     it 'works', ->
       Fotolife = require '../src/fotolife'
-      xml = Fotolife.prototype._toXml
+      json =
         entry:
           $:
             xmlns: 'http://purl.org/atom/ns#'
@@ -128,6 +180,7 @@ describe 'fotolife', ->
               mode: 'base64'
               type: '"TYPE'
             _: '<ENCODED'
+      xml = Fotolife.prototype._toXml json
       assert xml is '''
         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <entry xmlns="http://purl.org/atom/ns#">

@@ -121,10 +121,13 @@ class Fotolife
     delete options.path
     request options, (err, res) ->
       return callback(err) if err?
-      parser = new xml2js.Parser()
-      parser.parseString res.body, (err, result) ->
+      @_toJson res.body, (err, result) ->
         return callback(err) if err?
         callback null, result
+
+  _toJson: (xml, callback) ->
+    parser = new xml2js.Parser explicitArray: false, explicitCharkey: true
+    parser.parseString xml, callback
 
   _toXml: (json) ->
     builder = new xml2js.Builder()
