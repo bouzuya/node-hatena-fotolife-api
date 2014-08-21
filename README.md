@@ -8,6 +8,8 @@ Hatena::Fotolife API wrapper for Node.js (unofficial)
 
 ## Example
 
+### Callback style
+
 ```javascript
 var fotolife = require('hatena-fotolife-api');
 
@@ -21,6 +23,22 @@ client.create({
   } else {
     console.log('uploaded');
   }
+});
+```
+
+### Promise style
+
+```javascript
+var fotolife = require('hatena-fotolife-api');
+
+var client = fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
+client.create({
+  title: 'bouzuya\'s icon',
+  file: './bouzuya.png'
+}).then(function() {
+  console.log('uploaded');
+}, function(err) {
+  console.error(err);
 });
 ```
 
