@@ -43,6 +43,8 @@ class Fotolife
   #   Promise
   create: ({ file, title, type, folder, generator }, callback) ->
     return @_reject('options.file is required', callback) unless file?
+    unless fs.existsSync(file)
+      return @_reject('options.file does not exist', callback)
     title = title ? ''
     type = type ? mime.lookup(file)
     encoded = fs.readFileSync(file).toString('base64')
