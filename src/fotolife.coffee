@@ -42,7 +42,7 @@ class Fotolife
   # returns:
   #   Promise
   create: ({ file, title, type, folder, generator }, callback) ->
-    return callback(new Error('options.file is required')) unless file?
+    return @_reject('options.file is required', callback) unless file?
     title = title ? ''
     type = type ? mime.lookup(file)
     encoded = fs.readFileSync(file).toString('base64')
@@ -75,8 +75,8 @@ class Fotolife
   # returns:
   #   Promise
   update: ({ id, title }, callback) ->
-    return callback(new Error('options.id is required')) unless id?
-    return callback(new Error('options.title is required')) unless title?
+    return @_reject('options.id is required', callback) unless id?
+    return @_reject('options.title is required', callback) unless title?
     method = 'put'
     path = '/atom/edit/' + id
     body =
@@ -98,7 +98,7 @@ class Fotolife
   # returns:
   #   Promise
   destroy: ({ id }, callback) ->
-    return callback(new Error('options.id is required')) unless id?
+    return @_reject('options.id is required', callback) unless id?
     method = 'delete'
     path = '/atom/edit/' + id
     # TODO: check res.statusCode is 200
@@ -114,7 +114,7 @@ class Fotolife
   # returns:
   #   Promise
   show: ({ id }, callback) ->
-    return callback(new Error('options.id is required')) unless id?
+    return @_reject('options.id is required', callback) unless id?
     method = 'get'
     path = '/atom/edit/' + id
     # TODO: check res.statusCode is 200
@@ -134,6 +134,13 @@ class Fotolife
     path = '/atom/feed'
     # TODO: check res.statusCode is 200
     @_request { method, path }, callback
+
+  _reject: (message, callback) ->
+    try
+      e = new Error(message)
+      callback(e) if callback?
+    finally
+      Promise.reject(e)
 
   _request: ({ method, path, body }, callback) ->
     callback = callback ? (->)
