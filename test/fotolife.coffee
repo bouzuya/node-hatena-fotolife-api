@@ -167,24 +167,51 @@ describe 'fotolife', ->
           done()
 
   describe '_toXml', ->
-    it 'works', ->
-      Fotolife = require '../src/fotolife'
-      json =
-        entry:
-          $:
-            xmlns: 'http://purl.org/atom/ns#'
-          title:
-            _: '<TITLE'
-          content:
+    describe 'single elements', ->
+      it 'works', ->
+        Fotolife = require '../src/fotolife'
+        json =
+          entry:
             $:
-              mode: 'base64'
-              type: '"TYPE'
-            _: '<ENCODED'
-      xml = Fotolife.prototype._toXml json
-      assert xml is '''
-        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <entry xmlns="http://purl.org/atom/ns#">
-          <title>&lt;TITLE</title>
-          <content mode="base64" type="&quot;TYPE">&lt;ENCODED</content>
-        </entry>
-      '''
+              xmlns: 'http://purl.org/atom/ns#'
+            title:
+              _: '<TITLE'
+            content:
+              $:
+                mode: 'base64'
+                type: '"TYPE'
+              _: '<ENCODED'
+        xml = Fotolife.prototype._toXml json
+        assert xml is '''
+          <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <entry xmlns="http://purl.org/atom/ns#">
+            <title>&lt;TITLE</title>
+            <content mode="base64" type="&quot;TYPE">&lt;ENCODED</content>
+          </entry>
+        '''
+
+    describe 'multiple elements', ->
+      it 'works', ->
+        Fotolife = require '../src/fotolife'
+        json =
+          entry:
+            $:
+              xmlns: 'http://purl.org/atom/ns#'
+            title:
+              [
+                $:
+                  attr: 'ATTR1'
+                _: '<TITLE1'
+              ,
+                $:
+                  attr: 'ATTR2'
+                _: '<TITLE2'
+              ]
+        xml = Fotolife.prototype._toXml json
+        assert xml is '''
+          <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <entry xmlns="http://purl.org/atom/ns#">
+            <title attr="ATTR1">&lt;TITLE1</title>
+            <title attr="ATTR2">&lt;TITLE2</title>
+          </entry>
+        '''
