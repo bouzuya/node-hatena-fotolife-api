@@ -46,7 +46,7 @@ See [`examples/`](examples/).
 
 ## API Docs
 
-See [Hatena::Fotolife Atom API](http://developer.hatena.ne.jp/ja/documents/fotolife/apis/atom) and [`test/`](test/).
+See [Hatena::Fotolife Atom API](http://developer.hatena.ne.jp/ja/documents/fotolife/apis/atom), [`test/`](test/) and [`examples/`](examples/).
 
 ## Development
 
