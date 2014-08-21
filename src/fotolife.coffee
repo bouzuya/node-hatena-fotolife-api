@@ -48,7 +48,6 @@ class Fotolife
     title = title ? ''
     type = type ? mime.lookup(file)
     encoded = fs.readFileSync(file).toString('base64')
-    # params
     method = 'post'
     path = '/atom/post'
     body = entry:
@@ -63,8 +62,8 @@ class Fotolife
         _: encoded
     body.entry['dc:subject'] = { _: folder } if folder?
     body.entry.generator = { _: generator } if generator?
-    # TODO: check res.statusCode is 201
-    @_request { method, path, body }, callback
+    statusCode = 201
+    @_request { method, path, body, statusCode }, callback
 
   # PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
   # params:
@@ -87,8 +86,8 @@ class Fotolife
           xmlns: 'http://purl.org/atom/ns#'
         title:
           _: title
-    # TODO: check res.statusCode is 200
-    @_request { method, path, body }, callback
+    statusCode = 200
+    @_request { method, path, body, statusCode }, callback
 
   # DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
   # params:
@@ -103,8 +102,8 @@ class Fotolife
     return @_reject('options.id is required', callback) unless id?
     method = 'delete'
     path = '/atom/edit/' + id
-    # TODO: check res.statusCode is 200
-    @_request { method, path }, callback
+    statusCode = 200
+    @_request { method, path, statusCode }, callback
 
   # GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
   # params:
@@ -119,8 +118,8 @@ class Fotolife
     return @_reject('options.id is required', callback) unless id?
     method = 'get'
     path = '/atom/edit/' + id
-    # TODO: check res.statusCode is 200
-    @_request { method, path }, callback
+    statusCode = 200
+    @_request { method, path, statusCode }, callback
 
   # GET FeedURI (/atom/feed)
   # params:
@@ -134,8 +133,8 @@ class Fotolife
     callback = options unless callback?
     method = 'get'
     path = '/atom/feed'
-    # TODO: check res.statusCode is 200
-    @_request { method, path }, callback
+    statusCode = 200
+    @_request { method, path, statusCode }, callback
 
   _reject: (message, callback) ->
     try
@@ -144,7 +143,7 @@ class Fotolife
     finally
       Promise.reject(e)
 
-  _request: ({ method, path, body }, callback) ->
+  _request: ({ method, path, body, statusCode }, callback) ->
     callback = callback ? (->)
     token = @_wsse.getUsernameToken @_username, @_apikey, nonceBase64: true
     params = {}
@@ -159,6 +158,8 @@ class Fotolife
         params.body = body if body?
         @_requestPromise params
       .then (res) =>
+        if res.statusCode isnt statusCode
+          throw new Error("HTTP status code is #{res.statusCode}")
         @_toJson res.body
       .then (json) ->
         callback(null, json)
