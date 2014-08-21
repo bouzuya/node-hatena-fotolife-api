@@ -13,10 +13,15 @@ class Fotolife
 
   @BASE_URL = 'http://f.hatena.ne.jp'
 
-  constructor: (options) ->
-    @_type = options.type
-    @_username = options.username
-    @_apikey = options.apikey
+  # constructor
+  # options:
+  # - type     : always 'wsse'. authentication type. (optional)
+  # - username : wsse authentication username. (required)
+  # - apikey   : wsse authentication apikey. (required)
+  constructor: ({ type, username, apikey }) ->
+    @_type = type ? 'wsse'
+    @_username = username
+    @_apikey = apikey
     @_wsse = wsse()
 
   # POST PostURI (/atom/post)

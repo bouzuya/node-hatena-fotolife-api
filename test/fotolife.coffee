@@ -15,6 +15,12 @@ describe 'fotolife', ->
   afterEach ->
     @sinon.restore()
 
+  describe 'constructor', ->
+    it 'works', ->
+      assert @fotolife._type is 'wsse'
+      assert @fotolife._username is 'username'
+      assert @fotolife._apikey is 'apikey'
+
   describe 'create', ->
     describe 'no file options', ->
       it 'returns error', (done) ->
