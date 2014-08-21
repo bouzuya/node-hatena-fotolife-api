@@ -5,6 +5,8 @@ wsse = require 'wsse'
 xml2js = require 'xml2js'
 {Promise} = require 'q'
 
+# Hatena::Fotolife API wrapper
+#
 # - POST   PostURI (/atom/post)                => Fotolife#create
 # - PUT    EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#update
 # - DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#destroy
@@ -15,10 +17,11 @@ class Fotolife
   @BASE_URL = 'http://f.hatena.ne.jp'
 
   # constructor
-  # options:
-  # - type     : always 'wsse'. authentication type. (optional)
-  # - username : wsse authentication username. (required)
-  # - apikey   : wsse authentication apikey. (required)
+  # params:
+  #   options: (required)
+  #   - type     : authentication type. default `'wsse'`
+  #   - username : wsse authentication username. (required)
+  #   - apikey   : wsse authentication apikey. (required)
   constructor: ({ type, username, apikey }) ->
     @_type = type ? 'wsse'
     @_username = username
@@ -26,15 +29,18 @@ class Fotolife
     @_wsse = wsse()
 
   # POST PostURI (/atom/post)
-  # options:
-  # - file     : 'content'. image file path. (required)
-  # - title    : 'title'. image title. default `''`. (optional)
-  # - type     : 'type'. content-type. default `mime.lookup(file)`. (optional)
-  # - folder   : 'dc:subject'. folder name. default `undefined`. (optional)
-  # - generator: 'generator'. tool name. default `undefined`. (optional)
-  # callback:
-  # - err: error
-  # - res: response
+  # params:
+  #   options: (required)
+  #   - file     : 'content'. image file path. (required)
+  #   - title    : 'title'. image title. default `''`.
+  #   - type     : 'type'. content-type. default `mime.lookup(file)`.
+  #   - folder   : 'dc:subject'. folder name. default `undefined`.
+  #   - generator: 'generator'. tool name. default `undefined`.
+  #   callback:
+  #   - err: error
+  #   - res: response
+  # returns:
+  #   Promise
   create: ({ file, title, type, folder, generator }, callback) ->
     return callback(new Error('options.file is required')) unless file?
     title = title ? ''
@@ -59,12 +65,15 @@ class Fotolife
     @_request { method, path, body }, callback
 
   # PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
-  # options:
-  # - id    : image id. (required)
-  # - title : 'title'. image title. (required)
-  # callback:
-  # - err: error
-  # - res: response
+  # params:
+  #   options: (required)
+  #   - id    : image id. (required)
+  #   - title : 'title'. image title. (required)
+  #   callback:
+  #   - err: error
+  #   - res: feed
+  # returns:
+  #   Promise
   update: ({ id, title }, callback) ->
     return callback(new Error('options.id is required')) unless id?
     return callback(new Error('options.title is required')) unless title?
@@ -80,11 +89,14 @@ class Fotolife
     @_request { method, path, body }, callback
 
   # DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
-  # options:
-  # - id: image id. (required)
-  # callback:
-  # - err: error
-  # - res: response
+  # params:
+  #   options: (required)
+  #   - id: image id. (required)
+  #   callback:
+  #   - err: error
+  #   - res: response
+  # returns:
+  #   Promise
   destroy: ({ id }, callback) ->
     return callback(new Error('options.id is required')) unless id?
     method = 'delete'
@@ -93,11 +105,14 @@ class Fotolife
     @_request { method, path }, callback
 
   # GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
-  # options:
-  # - id: image id. (required)
-  # callback:
-  # - err: error
-  # - res: response
+  # params:
+  #   options: (required)
+  #   - id: image id. (required)
+  #   callback:
+  #   - err: error
+  #   - res: response
+  # returns:
+  #   Promise
   show: ({ id }, callback) ->
     return callback(new Error('options.id is required')) unless id?
     method = 'get'
@@ -106,10 +121,13 @@ class Fotolife
     @_request { method, path }, callback
 
   # GET FeedURI (/atom/feed)
-  # options:
-  # callback:
-  # - err: error
-  # - res: response
+  # params:
+  #   options:
+  #   callback:
+  #   - err: error
+  #   - res: response
+  # returns:
+  #   Promise
   index: (options, callback) ->
     callback = options unless callback?
     method = 'get'
