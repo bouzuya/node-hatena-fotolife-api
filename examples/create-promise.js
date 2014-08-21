@@ -10,10 +10,8 @@ var client = fotolife({
 client.create({
   title: 'bouzuya\'s icon',
   file: './bouzuya.png'
-}, function(err, res) {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('uploaded');
-  }
+}).then(function(res) {
+  console.log('uploaded');
+}, function(err) {
+  console.error(err);
 });
