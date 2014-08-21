@@ -145,9 +145,10 @@ describe 'fotolife', ->
       describe '_toJson', ->
         it 'works', (done) ->
           Fotolife = require '../src/fotolife'
-          Fotolife.prototype._toJson @xml, (err, json) =>
-            assert.deepEqual json, @json
-            done()
+          Fotolife.prototype._toJson @xml
+            .then (json) =>
+              assert.deepEqual json, @json
+            .then (-> done()), done
 
       describe '_toXml', ->
         it 'works', ->
@@ -182,9 +183,10 @@ describe 'fotolife', ->
       describe '_toJson', ->
         it 'works', (done) ->
           Fotolife = require '../src/fotolife'
-          Fotolife.prototype._toJson @xml, (err, json) =>
-            assert.deepEqual json, @json
-            done()
+          Fotolife.prototype._toJson @xml
+            .then (json) =>
+              assert.deepEqual json, @json
+            .then (-> done()), done
 
       describe '_toXml', ->
         it 'works', ->

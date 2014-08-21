@@ -3,6 +3,7 @@ mime = require 'mime'
 request = require 'request'
 wsse = require 'wsse'
 xml2js = require 'xml2js'
+{Promise} = require 'q'
 
 # - POST   PostURI (/atom/post)                => Fotolife#create
 # - PUT    EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#update
@@ -130,9 +131,14 @@ class Fotolife
         return callback(err) if err?
         callback null, result
 
-  _toJson: (xml, callback) ->
-    parser = new xml2js.Parser explicitArray: false, explicitCharkey: true
-    parser.parseString xml, callback
+  _toJson: (xml) ->
+    new Promise (resolve, reject) ->
+      parser = new xml2js.Parser explicitArray: false, explicitCharkey: true
+      parser.parseString xml, (err, result) ->
+        if err?
+          reject err
+        else
+          resolve result
 
   _toXml: (json) ->
     builder = new xml2js.Builder()
