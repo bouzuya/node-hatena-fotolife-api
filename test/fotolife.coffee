@@ -151,10 +151,12 @@ describe 'fotolife', ->
             .then (-> done()), done
 
       describe '_toXml', ->
-        it 'works', ->
+        it 'works', (done) ->
           Fotolife = require '../src/fotolife'
-          xml = Fotolife.prototype._toXml @json
-          assert xml is @xml
+          Fotolife.prototype._toXml @json
+            .then (xml) =>
+              assert xml is @xml
+            .then (-> done()), done
 
     describe 'multiple elements', ->
       beforeEach ->
@@ -189,7 +191,9 @@ describe 'fotolife', ->
             .then (-> done()), done
 
       describe '_toXml', ->
-        it 'works', ->
+        it 'works', (done) ->
           Fotolife = require '../src/fotolife'
-          xml = Fotolife.prototype._toXml @json
-          assert xml is @xml
+          Fotolife.prototype._toXml @json
+            .then (xml) =>
+              assert xml is @xml
+            .then (-> done()), done

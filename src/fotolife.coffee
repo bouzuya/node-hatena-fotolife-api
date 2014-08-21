@@ -142,6 +142,7 @@ class Fotolife
 
   _toXml: (json) ->
     builder = new xml2js.Builder()
-    builder.buildObject json
+    xml = builder.buildObject json
+    Promise.resolve xml
 
 module.exports = Fotolife
