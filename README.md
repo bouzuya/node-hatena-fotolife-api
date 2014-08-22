@@ -50,17 +50,7 @@ See [Hatena::Fotolife Atom API](http://developer.hatena.ne.jp/ja/documents/fotol
 
 ## Development
 
-### Test
-
-    $ npm test
-
-### Build
-
-    $ npm run build
-
-### Publish
-
-    $ npm run build && npm publish
+`npm run`.
 
 ## License
 

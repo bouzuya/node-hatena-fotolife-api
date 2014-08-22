@@ -24,7 +24,7 @@ describe 'fotolife', ->
   describe 'create', ->
     describe 'no file options', ->
       it 'returns error', (done) ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.create {}, (e) =>
           assert @request.callCount is 0
           assert e instanceof Error
@@ -32,7 +32,7 @@ describe 'fotolife', ->
 
     describe 'default options', ->
       it 'works', ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.create
           file: pngfile
         , -> null
@@ -46,7 +46,7 @@ describe 'fotolife', ->
 
     describe 'all options', ->
       it 'works', ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.create
           file: pngfile
           title: 'TITLE'
@@ -65,7 +65,7 @@ describe 'fotolife', ->
   describe 'update', ->
     describe 'no id options', ->
       it 'returns error', (done) ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.update {}, (e) =>
           assert @request.callCount is 0
           assert e instanceof Error
@@ -73,7 +73,7 @@ describe 'fotolife', ->
 
     describe 'no title options', ->
       it 'returns error', (done) ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.update { id: 123 }, (e) =>
           assert @request.callCount is 0
           assert e instanceof Error
@@ -81,7 +81,7 @@ describe 'fotolife', ->
 
     describe 'all options', ->
       it 'works', ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.update { id: 123, title: 'TITLE' }, -> null
         assert @request.firstCall.args[0].method is 'put'
         assert @request.firstCall.args[0].path is '/atom/edit/123'
@@ -91,7 +91,7 @@ describe 'fotolife', ->
   describe 'destroy', ->
     describe 'no id options', ->
       it 'returns error', (done) ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.destroy {}, (e) =>
           assert @request.callCount is 0
           assert e instanceof Error
@@ -99,7 +99,7 @@ describe 'fotolife', ->
 
     describe 'all options', ->
       it 'works', ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.destroy { id: 123 }, -> null
         assert @request.firstCall.args[0].method is 'delete'
         assert @request.firstCall.args[0].path is '/atom/edit/123'
@@ -107,7 +107,7 @@ describe 'fotolife', ->
   describe 'show', ->
     describe 'no id options', ->
       it 'returns error', (done) ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.show {}, (e) =>
           assert @request.callCount is 0
           assert e instanceof Error
@@ -115,7 +115,7 @@ describe 'fotolife', ->
 
     describe 'all options', ->
       it 'works', ->
-        pngfile = path.resolve __dirname, '../examples/bouzuya.png'
+        pngfile = path.resolve __dirname, './bouzuya.png'
         @fotolife.show { id: 123 }, -> null
         assert @request.firstCall.args[0].method is 'get'
         assert @request.firstCall.args[0].path is '/atom/edit/123'
