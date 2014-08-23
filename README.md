@@ -93,11 +93,14 @@ See [Hatena::Fotolife Atom API](http://developer.hatena.ne.jp/ja/documents/fotol
 
 [![Build Status][travis-badge]][travis]
 [![Dependencies status][david-dm-badge]][david-dm]
+[![Coverage Status][coveralls-badge]][coveralls]
 
 [travis]: https://travis-ci.org/bouzuya/node-hatena-fotolife-api
 [travis-badge]: https://travis-ci.org/bouzuya/node-hatena-fotolife-api.svg?branch=master
 [david-dm]: https://david-dm.org/bouzuya/node-hatena-fotolife-api
 [david-dm-badge]: https://david-dm.org/bouzuya/node-hatena-fotolife-api.png
+[coveralls]: https://coveralls.io/r/bouzuya/node-hatena-fotolife-api
+[coveralls-badge]: https://img.shields.io/coveralls/bouzuya/node-hatena-fotolife-api.svg
 [user]: https://github.com/bouzuya
 [mail]: mailto:m@bouzuya.net
 [url]: http://bouzuya.net
