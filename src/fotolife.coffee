@@ -1,9 +1,10 @@
+{Promise} = require 'q'
 fs = require 'fs'
 mime = require 'mime'
+oauth = require 'oauth'
 request = require 'request'
 wsse = require 'wsse'
 xml2js = require 'xml2js'
-{Promise} = require 'q'
 
 # Hatena::Fotolife API wrapper
 #
@@ -20,12 +21,30 @@ class Fotolife
   # params:
   #   options: (required)
   #   - type     : authentication type. default `'wsse'`
+  #   (type 'wsse')
   #   - username : wsse authentication username. (required)
   #   - apikey   : wsse authentication apikey. (required)
-  constructor: ({ type, username, apikey }) ->
+  #   (type 'oauth')
+  #   - consumerKey       : oauth consumer key. (required)
+  #   - consumerSecret    : oauth consumer secret. (required)
+  #   - accessToken       : oauth access token. (required)
+  #   - accessTokenSecret : oauth access token secret. (required)
+  constructor: ({
+    type,
+    username,
+    apikey,
+    consumerKey
+    consumerSecret,
+    accessToken,
+    accessTokenSecret
+  }) ->
     @_type = type ? 'wsse'
     @_username = username
     @_apikey = apikey
+    @_consumerKey = consumerKey
+    @_consumerSecret = consumerSecret
+    @_accessToken = accessToken
+    @_accessTokenSecret = accessTokenSecret
     @_wsse = wsse()
 
   # POST PostURI (/atom/post)
@@ -145,13 +164,20 @@ class Fotolife
 
   _request: ({ method, path, body, statusCode }, callback) ->
     callback = callback ? (->)
-    token = @_wsse.getUsernameToken @_username, @_apikey, nonceBase64: true
     params = {}
     params.method = method
     params.url = Fotolife.BASE_URL + path
-    params.headers =
-      'Authorization': 'WSSE profile="UsernameToken"',
-      'X-WSSE': 'UsernameToken ' + token
+    if @_type is 'wsse'
+      token = @_wsse.getUsernameToken @_username, @_apikey, nonceBase64: true
+      params.headers =
+        'Authorization': 'WSSE profile="UsernameToken"'
+        'X-WSSE': 'UsernameToken ' + token
+    else if @_type is 'oauth'
+      params.oauth =
+        consumer_key: @_consumerKey
+        consumer_secret: @_consumerSecret
+        token: @_accessToken
+        token_secret: @_accessTokenSecret
     promise = if body? then @_toXml(body) else Promise.resolve(null)
     promise
       .then (body) =>
