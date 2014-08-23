@@ -45,7 +45,6 @@ class Fotolife
     @_consumerSecret = consumerSecret
     @_accessToken = accessToken
     @_accessTokenSecret = accessTokenSecret
-    @_wsse = wsse()
 
   # POST PostURI (/atom/post)
   # params:
@@ -159,7 +158,8 @@ class Fotolife
     try
       e = new Error(message)
       callback(e) if callback?
-    finally
+      Promise.reject(e)
+    catch
       Promise.reject(e)
 
   _request: ({ method, path, body, statusCode }, callback) ->
@@ -167,17 +167,17 @@ class Fotolife
     params = {}
     params.method = method
     params.url = Fotolife.BASE_URL + path
-    if @_type is 'wsse'
-      token = @_wsse.getUsernameToken @_username, @_apikey, nonceBase64: true
-      params.headers =
-        'Authorization': 'WSSE profile="UsernameToken"'
-        'X-WSSE': 'UsernameToken ' + token
-    else if @_type is 'oauth'
+    if @_type is 'oauth'
       params.oauth =
         consumer_key: @_consumerKey
         consumer_secret: @_consumerSecret
         token: @_accessToken
         token_secret: @_accessTokenSecret
+    else # @_type is 'wsse'
+      token = wsse().getUsernameToken @_username, @_apikey, nonceBase64: true
+      params.headers =
+        'Authorization': 'WSSE profile="UsernameToken"'
+        'X-WSSE': 'UsernameToken ' + token
     promise = if body? then @_toXml(body) else Promise.resolve(null)
     promise
       .then (body) =>
@@ -195,8 +195,8 @@ class Fotolife
         err
 
   _requestPromise: (params) ->
-    new Promise (resolve, reject) ->
-      request params, (err, res) ->
+    new Promise (resolve, reject) =>
+      @_rawRequest params, (err, res) ->
         if err?
           reject err
         else
@@ -213,7 +213,14 @@ class Fotolife
 
   _toXml: (json) ->
     builder = new xml2js.Builder()
-    xml = builder.buildObject json
-    Promise.resolve xml
+    try
+      xml = builder.buildObject json
+      Promise.resolve xml
+    catch e
+      Promise.reject e
+
+  _rawRequest: request
+
+  _mime: mime
 
 module.exports = Fotolife
