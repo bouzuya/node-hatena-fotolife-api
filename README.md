@@ -6,18 +6,21 @@ Hatena::Fotolife API wrapper for Node.js (unofficial)
 
     $ npm install hatena-fotolife-api
 
-## Example
+## Usage
 
-### Callback style
+See [`examples/`](examples/).
+
+### Coding style (Callback/Promise)
+
+#### Callback style
 
 ```javascript
 var fotolife = require('hatena-fotolife-api');
 
 var client = fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
-client.create({
-  title: 'bouzuya\'s icon',
-  file: './bouzuya.png'
-}, function(err) {
+var options = { title: 'bouzuya\'s icon', file: './bouzuya.png' };
+
+client.create(options, function(err) {
   if (err) {
     console.error(err);
   } else {
@@ -26,23 +29,49 @@ client.create({
 });
 ```
 
-### Promise style
+#### Promise style
 
 ```javascript
 var fotolife = require('hatena-fotolife-api');
 
 var client = fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
-client.create({
-  title: 'bouzuya\'s icon',
-  file: './bouzuya.png'
-}).then(function() {
+var options = { title: 'bouzuya\'s icon', file: './bouzuya.png' };
+
+client.create(options).then(function() {
   console.log('uploaded');
 }, function(err) {
   console.error(err);
 });
 ```
 
-See [`examples/`](examples/).
+### Configuration (WSSE/OAuth)
+
+#### WSSE
+
+See ["How to use Hatena WSSE"](http://developer.hatena.ne.jp/ja/documents/auth/apis/wsse).
+
+- username ... Your username.
+- apikey ... See [AtomPub API key](http://blog.hatena.ne.jp/my/config/detail).
+
+#### OAuth
+
+See ["How to use Hatena OAuth"](http://developer.hatena.ne.jp/ja/documents/auth/apis/oauth).
+
+Application scope is "read_private" or "write_private" or both.
+
+```javascript
+var fotolife = require('hatena-fotolife-api');
+
+var client = fotolife({
+  type: 'oauth',
+  consumerKey: 'consumerKey',
+  consumerSecret: 'consumerSecret',
+  accessToken: 'accessToken',
+  accessTokenSecret: 'accessTokenSecret'
+});
+
+// ...
+```
 
 ## API Docs
 
@@ -50,7 +79,7 @@ See [Hatena::Fotolife Atom API](http://developer.hatena.ne.jp/ja/documents/fotol
 
 ## Development
 
-`npm run`.
+`npm run`
 
 ## License
 
