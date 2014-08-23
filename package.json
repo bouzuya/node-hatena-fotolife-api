@@ -6,6 +6,7 @@
   "scripts": {
     "build": "gulp",
     "clean": "gulp clean",
+    "coveralls": "gulp coveralls",
     "test": "gulp test",
     "watch": "gulp watch"
   },
@@ -33,6 +34,7 @@
     "espower-coffee": "^0.1.0",
     "gulp": "^3.8.7",
     "gulp-coffee": "^2.1.1",
+    "gulp-coveralls": "^0.1.2",
     "gulp-espower": "^0.8.0",
     "gulp-istanbul": "^0.2.2",
     "gulp-mocha": "^1.0.0",

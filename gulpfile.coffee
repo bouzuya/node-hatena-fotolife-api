@@ -5,6 +5,7 @@ paths =
   src: './src/**/*.coffee'
   test: './test/**/*.coffee'
   testFixtures: './test/*.png'
+  coverage: './coverage/**/lcov.info'
   coverageDir: './coverage/'
   compiledDir: './.tmp/'
   compiledSrc: './.tmp/src/**/*.js'
@@ -20,6 +21,12 @@ gulp.task 'clean', (done) ->
     paths.coverageDir
     paths.buildDir
   ], done
+
+gulp.task 'coveralls', ->
+  coveralls = require 'gulp-coveralls'
+  gulp
+    .src paths.coverage
+    .pipe coveralls()
 
 gulp.task 'build', ->
   coffee = require 'gulp-coffee'
