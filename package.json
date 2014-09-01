@@ -1,6 +1,6 @@
 {
   "name": "hatena-fotolife-api",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Hatena::Fotolife API wrapper for Node.js (unofficial)",
   "main": "index.js",
   "scripts": {
