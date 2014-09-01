@@ -192,7 +192,7 @@ class Fotolife
         json
       .then null, (err) ->
         callback(err)
-        err
+        throw err
 
   _requestPromise: (params) ->
     new Promise (resolve, reject) =>
