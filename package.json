@@ -20,13 +20,6 @@
   "devDependencies": {
     "coffee-script": "^1.7.1",
     "espower-coffee": "^0.1.0",
-    "gulp": "^3.8.7",
-    "gulp-coffee": "^2.1.1",
-    "gulp-coveralls": "^0.1.2",
-    "gulp-espower": "^0.8.0",
-    "gulp-istanbul": "^0.2.2",
-    "gulp-mocha": "^1.0.0",
-    "gulp-util": "^3.0.0",
     "merge-stream": "^0.1.5",
     "mocha": "^1.20.1",
     "npm-run-all": "^4.1.5",
@@ -49,10 +42,10 @@
     "url": "git://github.com/bouzuya/node-hatena-fotolife-api.git"
   },
   "scripts": {
-    "build": "gulp build",
+    "build": "exit 1",
     "clean": "rimraf .tmp coverage lib",
-    "coveralls": "gulp coveralls",
+    "coveralls": "exit 1",
     "prepare": "npm-run-all -s clean build",
-    "test": "gulp test"
+    "test": "exit 1"
   }
 }
