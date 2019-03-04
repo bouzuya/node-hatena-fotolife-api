@@ -59,5 +59,3 @@ gulp.task 'test', ['compile-src', 'compile-test'], ->
         .src paths.compiledTest
         .pipe mocha().on('error', gutil.log)
         .pipe istanbul.writeReports(paths.coverageDir)
-
-gulp.task 'default', ['build']

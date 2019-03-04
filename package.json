@@ -49,7 +49,7 @@
     "url": "git://github.com/bouzuya/node-hatena-fotolife-api.git"
   },
   "scripts": {
-    "build": "gulp",
+    "build": "gulp build",
     "clean": "rimraf .tmp coverage lib",
     "coveralls": "gulp coveralls",
     "test": "gulp test"
