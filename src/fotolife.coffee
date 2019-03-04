@@ -1,4 +1,3 @@
-{Promise} = require 'q'
 fs = require 'fs'
 mime = require 'mime'
 oauth = require 'oauth'
