@@ -52,7 +52,6 @@
     "build": "gulp",
     "clean": "rimraf .tmp coverage lib",
     "coveralls": "gulp coveralls",
-    "test": "gulp test",
-    "watch": "gulp watch"
+    "test": "gulp test"
   }
 }

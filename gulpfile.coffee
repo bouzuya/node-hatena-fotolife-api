@@ -60,7 +60,4 @@ gulp.task 'test', ['compile-src', 'compile-test'], ->
         .pipe mocha().on('error', gutil.log)
         .pipe istanbul.writeReports(paths.coverageDir)
 
-gulp.task 'watch', ->
-  gulp.watch [paths.src, paths.test], ['test']
-
 gulp.task 'default', ['build']
