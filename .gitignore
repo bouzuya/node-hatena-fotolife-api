@@ -1,5 +1,6 @@
-.tmp
-*.log
-coverage
-lib
-node_modules
+/*.log
+/*.tgz
+/.tmp
+/coverage/
+/lib/
+/node_modules/
