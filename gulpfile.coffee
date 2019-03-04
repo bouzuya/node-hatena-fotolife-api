@@ -14,14 +14,6 @@ paths =
   compiledTestDir: './.tmp/test/'
   buildDir: './lib/'
 
-gulp.task 'clean', (done) ->
-  del = require 'del'
-  del [
-    paths.compiledDir
-    paths.coverageDir
-    paths.buildDir
-  ], done
-
 gulp.task 'coveralls', ->
   coveralls = require 'gulp-coveralls'
   gulp
