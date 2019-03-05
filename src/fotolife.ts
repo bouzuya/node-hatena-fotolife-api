@@ -24,7 +24,20 @@ interface FotolifeOptionsWSSE {
 
 type XMLObject = any;
 
-const reject = (s: string): Promise<never> => Promise.reject(new Error(s));
+const rejectE = (s: string): Promise<never> => Promise.reject(new Error(s));
+
+const requestPromise = (
+  params: request.UrlOptions & request.CoreOptions
+): Promise<request.Response> => {
+  return new Promise((resolve, reject) => {
+    return request(params, (error, response) => {
+      if (error != null)
+        return reject(error);
+      else
+        return resolve(response);
+    });
+  });
+};
 
 // Hatena::Fotolife API wrapper
 //
@@ -71,7 +84,7 @@ class Fotolife {
     const file = arg.file;
     const folder = arg.folder;
     const generator = arg.generator;
-    if (!fs.existsSync(file)) return reject('options.file does not exist');
+    if (!fs.existsSync(file)) return rejectE('options.file does not exist');
     const title = arg.title != null ? arg.title : '';
     const type = arg.type != null ? arg.type : mime.lookup(file);
     const encoded = fs.readFileSync(file).toString('base64');
@@ -201,24 +214,11 @@ class Fotolife {
     return promise.then((b) => {
       if (b != null)
         params.body = b;
-      return this._requestPromise(params);
+      return requestPromise(params);
     }).then((res) => {
       if (res.statusCode !== statusCode)
         throw new Error('HTTP status code is ' + res.statusCode);
       return this._toJson(res.body);
-    });
-  }
-
-  private _requestPromise(
-    params: any
-  ): Promise<request.Response> {
-    return new Promise((resolve, reject) => {
-      return request(params, (err, res) => {
-        if (err != null)
-          return reject(err);
-        else
-          return resolve(res);
-      });
     });
   }
 
