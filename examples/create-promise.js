@@ -1,4 +1,4 @@
-var fotolife = require('../'); // require('hatena-fotolife-api')
+var fotolife = require('../lib/').default; // require('hatena-fotolife-api')
 
 var client = fotolife({
   type: 'wsse',

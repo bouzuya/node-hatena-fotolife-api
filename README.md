@@ -4,7 +4,9 @@ Hatena::Fotolife API wrapper for Node.js (unofficial)
 
 ## Installation
 
-    $ npm install hatena-fotolife-api
+```bash
+npm install hatena-fotolife-api
+```
 
 ## Usage
 
