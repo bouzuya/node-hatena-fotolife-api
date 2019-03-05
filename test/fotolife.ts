@@ -33,7 +33,7 @@ const tests: Test[] = [
   }),
 
   test(category + 'create (happy path)', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
@@ -54,7 +54,7 @@ const tests: Test[] = [
   }),
 
   test(category + 'create (with all options)', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
@@ -75,13 +75,13 @@ const tests: Test[] = [
         const body = request.getCall(0).args[0].body;
         assert(body.entry.title._ === 'TITLE');
         assert(body.entry.content.$.type === 'TYPE');
-        assert(body.entry['dc:subject'] === 'FOLDER');
-        assert(body.entry.generator === 'GENERATOR');
+        assert(body.entry['dc:subject']._ === 'FOLDER');
+        assert(body.entry.generator._ === 'GENERATOR');
       });
   }),
 
   test(category + 'create (file does not exist)', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
@@ -99,7 +99,7 @@ const tests: Test[] = [
   }),
 
   test(category + 'update (with all options)', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
@@ -117,7 +117,7 @@ const tests: Test[] = [
   }),
 
   test(category + 'destroy (with all options)', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
@@ -133,7 +133,7 @@ const tests: Test[] = [
   }),
 
   test(category + 'show', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
@@ -149,14 +149,14 @@ const tests: Test[] = [
   }),
 
   test(category + 'index', () => {
-    const request = sinon.stub();
+    const request = sinon.stub().returns(Promise.resolve());
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: 'apikey',
       type: 'wsse',
       username: 'username'
     });
-    return fotolife.show({ id: 123 })
+    return fotolife.index()
       .then((_) => {
         assert(request.callCount === 1);
         assert(request.getCall(0).args[0].method === 'get');
