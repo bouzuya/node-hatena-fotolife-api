@@ -31,7 +31,7 @@ const requestPromise = (
 ): Promise<request.Response> => {
   return new Promise((resolve, reject) => {
     return request(params, (error, response) => {
-      if (error != null)
+      if (error !== null)
         return reject(error);
       else
         return resolve(response);
@@ -56,37 +56,42 @@ class Fotolife {
   private _accessToken: string | null;
   private _accessTokenSecret: string | null;
 
-  constructor(arg: FotolifeOptions) {
-    this._type = arg.type != null ? arg.type : 'wsse';
-    if (arg.type === 'oauth') {
+  constructor(options: FotolifeOptions) {
+    this._type = typeof options.type !== 'undefined' ? options.type : 'wsse';
+    if (options.type === 'oauth') {
       this._username = null;
       this._apikey = null;
-      this._consumerKey = arg.consumerKey;
-      this._consumerSecret = arg.consumerSecret;
-      this._accessToken = arg.accessToken;
-      this._accessTokenSecret = arg.accessTokenSecret;
+      this._consumerKey = options.consumerKey;
+      this._consumerSecret = options.consumerSecret;
+      this._accessToken = options.accessToken;
+      this._accessTokenSecret = options.accessTokenSecret;
     } else {
-      this._username = arg.username;
-      this._apikey = arg.apikey;
+      this._username = options.username;
+      this._apikey = options.apikey;
     }
   }
 
   // POST PostURI (/atom/post)
   public create(
-    arg: {
+    {
+      file,
+      folder: folderOrUndefined,
+      generator: generatorOrUndefined,
+      title: titleOrUndefined,
+      type: typeOrUndefined
+    }: {
       file: string; // 'content'. image file path. (required)
-      title?: string; // 'title'. image title. default `''`.
-      type?: string; // 'type'. content-type. default `mime.lookup(file)`.
       folder?: string; // 'dc:subject'. folder name. default `undefined`.
       generator?: string; // 'generator'. tool name. default `undefined`.
+      title?: string; // 'title'. image title. default `''`.
+      type?: string; // 'type'. content-type. default `mime.lookup(file)`.
     }
   ): Promise<T> {
-    const file = arg.file;
-    const folder = arg.folder;
-    const generator = arg.generator;
     if (!fs.existsSync(file)) return rejectE('options.file does not exist');
-    const title = arg.title != null ? arg.title : '';
-    const type = arg.type != null ? arg.type : mime.lookup(file);
+    const title = typeof titleOrUndefined !== 'undefined'
+      ? titleOrUndefined : '';
+    const type = typeof typeOrUndefined !== 'undefined'
+      ? typeOrUndefined : mime.lookup(file);
     const encoded = fs.readFileSync(file).toString('base64');
     const method = 'post';
     const path = '/atom/post';
@@ -107,13 +112,13 @@ class Fotolife {
         }
       }
     };
-    if (folder != null)
+    if (typeof folderOrUndefined !== 'undefined')
       body.entry['dc:subject'] = {
-        _: folder
+        _: folderOrUndefined
       };
-    if (generator != null)
+    if (typeof generatorOrUndefined !== 'undefined')
       body.entry.generator = {
-        _: generator
+        _: generatorOrUndefined
       };
     const statusCode = 201;
     return this._request({ body, method, path, statusCode });
@@ -121,13 +126,11 @@ class Fotolife {
 
   // PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public update(
-    arg: {
+    { id, title }: {
       id: string; // image id. (required)
       title: string; // 'title'. image title. (required)
     }
   ): Promise<T> {
-    const id = arg.id;
-    const title = arg.title;
     const method = 'put';
     const path = '/atom/edit/' + id;
     const body = {
@@ -146,11 +149,10 @@ class Fotolife {
 
   // DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public destroy(
-    arg: {
+    { id }: {
       id: string; // image id. (required)
     }
   ): Promise<T> {
-    const id = arg.id;
     const method = 'delete';
     const path = '/atom/edit/' + id;
     const statusCode = 200;
@@ -159,11 +161,10 @@ class Fotolife {
 
   // GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public show(
-    arg: {
+    { id }: {
       id: string; // image id. (required)
     }
   ): Promise<T> {
-    const id = arg.id;
     const method = 'get';
     const path = '/atom/edit/' + id;
     const statusCode = 200;
@@ -210,9 +211,9 @@ class Fotolife {
       };
     }
     const promise: Promise<string | null> =
-      body != null ? this._toXml(body) : Promise.resolve(null);
+      typeof body !== 'undefined' ? this._toXml(body) : Promise.resolve(null);
     return promise.then((b) => {
-      if (b != null)
+      if (b !== null)
         params.body = b;
       return requestPromise(params);
     }).then((res) => {
@@ -228,9 +229,9 @@ class Fotolife {
         explicitArray: false,
         explicitCharkey: true
       });
-      return parser.parseString(xml, (err, result) => {
-        if (err != null)
-          return reject(err);
+      return parser.parseString(xml, (error, result) => {
+        if (error !== null)
+          return reject(error);
         else
           return resolve(result);
       });
