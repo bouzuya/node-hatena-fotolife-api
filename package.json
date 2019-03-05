@@ -24,26 +24,31 @@
     "url": "https://github.com/bouzuya/node-hatena-fotolife-api/issues"
   },
   "dependencies": {
-    "mime": "^1.2.11",
+    "mime": "^2.4.0",
     "oauth": "^0.9.12",
     "request": "^2.40.0",
-    "wsse": "0.0.3",
-    "xml2js": "^0.4.4"
+    "wsse": "^3.0.0",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@types/mime": "^2.0.1",
     "@types/node": "^11.10.4",
     "@types/power-assert": "^1.5.0",
     "@types/request": "^2.48.1",
+    "@types/sinon": "^7.0.8",
+    "@types/xml2js": "^0.4.3",
     "babel-preset-power-assert": "^3.0.0",
     "beater": "^5.0.1",
     "coveralls": "^3.0.3",
+    "cpx": "^1.5.0",
     "npm-run-all": "^4.1.5",
     "nyc": "^13.3.0",
     "power-assert": "^1.6.1",
     "rimraf": "^2.6.3",
+    "sinon": "^7.2.7",
     "tslint": "^5.13.1",
     "typescript": "^3.3.3333",
     "watch": "^1.0.2"

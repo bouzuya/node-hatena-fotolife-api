@@ -44,12 +44,14 @@ const xmlStringToObject = (xmlString: string): Promise<XMLObject> => {
       explicitArray: false,
       explicitCharkey: true
     });
-    return parser.parseString(xmlString, (error, result) => {
-      if (error !== null)
-        return reject(error);
-      else
-        return resolve(result);
-    });
+    return parser.parseString(
+      xmlString,
+      (error: Error | null, result: any) => {
+        if (error !== null)
+          return reject(error);
+        else
+          return resolve(result);
+      });
   });
 };
 
@@ -92,6 +94,10 @@ class Fotolife {
     } else {
       this._username = options.username;
       this._apikey = options.apikey;
+      this._consumerKey = null;
+      this._consumerSecret = null;
+      this._accessToken = null;
+      this._accessTokenSecret = null;
     }
   }
 
@@ -123,7 +129,7 @@ class Fotolife {
               mode: 'base64',
               type:
                 (typeof typeOrUndefined !== 'undefined'
-                  ? typeOrUndefined : mime.lookup(file))
+                  ? typeOrUndefined : mime.getType(file))
             },
             _: fs.readFileSync(file).toString('base64')
           },
@@ -145,7 +151,7 @@ class Fotolife {
   // PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public update(
     { id, title }: {
-      id: string; // image id. (required)
+      id: number; // image id. (required)
       title: string; // 'title'. image title. (required)
     }
   ): Promise<any> { // FIXME
@@ -169,7 +175,7 @@ class Fotolife {
   // DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public destroy(
     { id }: {
-      id: string; // image id. (required)
+      id: number; // image id. (required)
     }
   ): Promise<any> { // FIXME
     return this._request({
@@ -182,7 +188,7 @@ class Fotolife {
   // GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public show(
     { id }: {
-      id: string; // image id. (required)
+      id: number; // image id. (required)
     }
   ): Promise<any> { // FIXME
     return this._request({
@@ -209,39 +215,37 @@ class Fotolife {
       statusCode: number;
     }
   ): Promise<T> {
-    return (
+    const bodyOrNullPromise: Promise<string | null> =
       typeof body !== 'undefined'
-        ? xmlObjectToXmlString(body) : Promise.resolve(null)
-    )
+        ? xmlObjectToXmlString(body) : Promise.resolve(null);
+    return bodyOrNullPromise
       .then((bodyOrNull: string | null) => {
         return requestPromise({
           ...(bodyOrNull !== null ? { body: bodyOrNull } : {}),
-          ... (this._type !== 'oauth'
+          ...(this._type !== 'oauth'
             ? {
               headers: {
                 'Authorization': 'WSSE profile="UsernameToken"',
-                'X-WSSE': 'UsernameToken ' +
-                  wsse()
-                    .getUsernameToken(
-                      this._username,
-                      this._apikey,
-                      { nonceBase64: true }
-                    )
+                'X-WSSE': wsse({
+                  password: this._apikey!,
+                  username: this._username!
+                }).getWSSEHeader({ nonceBase64: true })
               }
             } : {}),
           method,
           ...(this._type === 'oauth'
             ? {
               oauth: {
-                consumer_key: this._consumerKey,
-                consumer_secret: this._consumerSecret,
-                token: this._accessToken,
-                token_secret: this._accessTokenSecret
+                consumer_key: this._consumerKey!,
+                consumer_secret: this._consumerSecret!,
+                token: this._accessToken!,
+                token_secret: this._accessTokenSecret!
               }
             } : {}),
           url: Fotolife.BASE_URL + path
         });
-      }).then((res) => {
+      })
+      .then((res) => {
         if (res.statusCode !== statusCode)
           throw new Error('HTTP status code is ' + res.statusCode);
         return xmlStringToObject(res.body);
@@ -249,4 +253,7 @@ class Fotolife {
   }
 }
 
-export { Fotolife };
+export {
+  Fotolife,
+  FotolifeOptions
+};
