@@ -64,16 +64,15 @@ class Fotolife {
       type?: string; // 'type'. content-type. default `mime.lookup(file)`.
       folder?: string; // 'dc:subject'. folder name. default `undefined`.
       generator?: string; // 'generator'. tool name. default `undefined`.
-    },
-    callback?: Callback<T>
+    }
   ): Promise<T> {
     const file = arg.file;
     const folder = arg.folder;
     const generator = arg.generator;
     if (file == null)
-      return this._reject('options.file is required', callback);
+      return this._reject('options.file is required');
     if (!fs.existsSync(file))
-      return this._reject('options.file does not exist', callback);
+      return this._reject('options.file does not exist');
     const title = arg.title != null ? arg.title : '';
     const type = arg.type != null ? arg.type : mime.lookup(file);
     const encoded = fs.readFileSync(file).toString('base64');
@@ -105,7 +104,7 @@ class Fotolife {
         _: generator
       };
     const statusCode = 201;
-    return this._request({ body, method, path, statusCode }, callback);
+    return this._request({ body, method, path, statusCode });
   }
 
   // PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
@@ -113,15 +112,14 @@ class Fotolife {
     arg: {
       id: string; // image id. (required)
       title: string; // 'title'. image title. (required)
-    },
-    callback: Callback<T>
+    }
   ): Promise<T> {
     const id = arg.id;
     const title = arg.title;
     if (id == null)
-      return this._reject('options.id is required', callback);
+      return this._reject('options.id is required');
     if (title == null)
-      return this._reject('options.title is required', callback);
+      return this._reject('options.title is required');
     const method = 'put';
     const path = '/atom/edit/' + id;
     const body = {
@@ -135,61 +133,49 @@ class Fotolife {
       }
     };
     const statusCode = 200;
-    return this._request({ body, method, path, statusCode }, callback);
+    return this._request({ body, method, path, statusCode });
   }
 
   // DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public destroy(
     arg: {
       id: string; // image id. (required)
-    },
-    callback: Callback<T>
+    }
   ): Promise<T> {
     const id = arg.id;
     if (id == null)
-      return this._reject('options.id is required', callback);
+      return this._reject('options.id is required');
     const method = 'delete';
     const path = '/atom/edit/' + id;
     const statusCode = 200;
-    return this._request({ method, path, statusCode }, callback);
+    return this._request({ method, path, statusCode });
   }
 
   // GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
   public show(
     arg: {
       id: string; // image id. (required)
-    },
-    callback: Callback<T>
+    }
   ): Promise<T> {
     const id = arg.id;
     if (id == null)
-      return this._reject('options.id is required', callback);
+      return this._reject('options.id is required');
     const method = 'get';
     const path = '/atom/edit/' + id;
     const statusCode = 200;
-    return this._request({ method, path, statusCode }, callback);
+    return this._request({ method, path, statusCode });
   }
 
   // GET FeedURI (/atom/feed)
-  public index(options: {}, callback: Callback<T>): Promise<T> {
-    if (callback == null)
-      callback = options;
+  public index(): Promise<T> {
     const method = 'get';
     const path = '/atom/feed';
     const statusCode = 200;
-    return this._request({ method, path, statusCode }, callback);
+    return this._request({ method, path, statusCode });
   }
 
-  private _reject(message: string, callback: Callback<T>): Promise<T> {
-    var e;
-    try {
-      e = new Error(message);
-      if (callback != null)
-        callback(e);
-      return Promise.reject(e);
-    } catch (error) {
-      return Promise.reject(e);
-    }
+  private _reject(message: string): Promise<never> {
+    return Promise.reject(new Error(message));
   }
 
   private _request(
@@ -198,14 +184,12 @@ class Fotolife {
       method: 'delete' | 'get' | 'post' | 'put';
       path: string;
       statusCode: number;
-    },
-    callback: Callback<T>
+    }
   ): Promise<T> {
     const method = arg.method;
     const path = arg.path;
     const body = arg.body;
     const statusCode = arg.statusCode;
-    callback = callback != null ? callback : () => void 0;
     const params: any = {};
     params.method = method;
     params.url = Fotolife.BASE_URL + path;
@@ -235,12 +219,6 @@ class Fotolife {
       if (res.statusCode !== statusCode)
         throw new Error('HTTP status code is ' + res.statusCode);
       return this._toJson(res.body);
-    }).then((json) => {
-      callback(null, json);
-      return json;
-    }).then(null, (err) => {
-      callback(err);
-      throw err;
     });
   }
 
