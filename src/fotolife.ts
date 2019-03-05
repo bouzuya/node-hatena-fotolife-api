@@ -1,7 +1,6 @@
 
 import fs from 'fs';
 import mime from 'mime';
-import oauth from 'oauth';
 import request from 'request';
 import wsse from 'wsse';
 import xml2js from 'xml2js';
@@ -37,6 +36,31 @@ const requestPromise = (
         return resolve(response);
     });
   });
+};
+
+const xmlStringToObject = (xmlString: string): Promise<XMLObject> => {
+  return new Promise((resolve, reject) => {
+    const parser = new xml2js.Parser({
+      explicitArray: false,
+      explicitCharkey: true
+    });
+    return parser.parseString(xmlString, (error, result) => {
+      if (error !== null)
+        return reject(error);
+      else
+        return resolve(result);
+    });
+  });
+};
+
+const xmlObjectToXmlString = (xmlObject: XMLObject): Promise<string> => {
+  try {
+    const builder = new xml2js.Builder();
+    const xmlString = builder.buildObject(xmlObject);
+    return Promise.resolve(xmlString);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 // Hatena::Fotolife API wrapper
@@ -88,40 +112,34 @@ class Fotolife {
     }
   ): Promise<T> {
     if (!fs.existsSync(file)) return rejectE('options.file does not exist');
-    const title = typeof titleOrUndefined !== 'undefined'
-      ? titleOrUndefined : '';
-    const type = typeof typeOrUndefined !== 'undefined'
-      ? typeOrUndefined : mime.lookup(file);
-    const encoded = fs.readFileSync(file).toString('base64');
-    const method = 'post';
-    const path = '/atom/post';
-    const body: XMLObject = {
-      entry: {
-        $: {
-          xmlns: 'http://purl.org/atom/ns#'
-        },
-        content: {
+    return this._request({
+      body: {
+        entry: {
           $: {
-            mode: 'base64',
-            type
+            xmlns: 'http://purl.org/atom/ns#'
           },
-          _: encoded
-        },
-        title: {
-          _: title
+          content: {
+            $: {
+              mode: 'base64',
+              type:
+                (typeof typeOrUndefined !== 'undefined'
+                  ? typeOrUndefined : mime.lookup(file))
+            },
+            _: fs.readFileSync(file).toString('base64')
+          },
+          title: {
+            _: (typeof titleOrUndefined !== 'undefined' ? titleOrUndefined : '')
+          },
+          ...(typeof folderOrUndefined !== 'undefined'
+            ? { 'dc:subject': { _: folderOrUndefined } } : {}),
+          ...(typeof generatorOrUndefined !== 'undefined'
+            ? { generator: { _: generatorOrUndefined } } : {})
         }
-      }
-    };
-    if (typeof folderOrUndefined !== 'undefined')
-      body.entry['dc:subject'] = {
-        _: folderOrUndefined
-      };
-    if (typeof generatorOrUndefined !== 'undefined')
-      body.entry.generator = {
-        _: generatorOrUndefined
-      };
-    const statusCode = 201;
-    return this._request({ body, method, path, statusCode });
+      },
+      method: 'post',
+      path: '/atom/post',
+      statusCode: 201
+    });
   }
 
   // PUT EditURI (/atom/edit/XXXXXXXXXXXXXX)
@@ -131,20 +149,21 @@ class Fotolife {
       title: string; // 'title'. image title. (required)
     }
   ): Promise<T> {
-    const method = 'put';
-    const path = '/atom/edit/' + id;
-    const body = {
-      entry: {
-        $: {
-          xmlns: 'http://purl.org/atom/ns#'
-        },
-        title: {
-          _: title
+    return this._request({
+      body: {
+        entry: {
+          $: {
+            xmlns: 'http://purl.org/atom/ns#'
+          },
+          title: {
+            _: title
+          }
         }
-      }
-    };
-    const statusCode = 200;
-    return this._request({ body, method, path, statusCode });
+      },
+      method: 'put',
+      path: '/atom/edit/' + id,
+      statusCode: 200
+    });
   }
 
   // DELETE EditURI (/atom/edit/XXXXXXXXXXXXXX)
@@ -153,10 +172,11 @@ class Fotolife {
       id: string; // image id. (required)
     }
   ): Promise<T> {
-    const method = 'delete';
-    const path = '/atom/edit/' + id;
-    const statusCode = 200;
-    return this._request({ method, path, statusCode });
+    return this._request({
+      method: 'delete',
+      path: '/atom/edit/' + id,
+      statusCode: 200
+    });
   }
 
   // GET EditURI (/atom/edit/XXXXXXXXXXXXXX)
@@ -165,87 +185,67 @@ class Fotolife {
       id: string; // image id. (required)
     }
   ): Promise<T> {
-    const method = 'get';
-    const path = '/atom/edit/' + id;
-    const statusCode = 200;
-    return this._request({ method, path, statusCode });
+    return this._request({
+      method: 'get',
+      path: '/atom/edit/' + id,
+      statusCode: 200
+    });
   }
 
   // GET FeedURI (/atom/feed)
   public index(): Promise<T> {
-    const method = 'get';
-    const path = '/atom/feed';
-    const statusCode = 200;
-    return this._request({ method, path, statusCode });
+    return this._request({
+      method: 'get',
+      path: '/atom/feed',
+      statusCode: 200
+    });
   }
 
-  private _request(
-    arg: {
+  private _request<T>(
+    { body, method, path, statusCode }: {
       body?: XMLObject;
       method: 'delete' | 'get' | 'post' | 'put';
       path: string;
       statusCode: number;
     }
   ): Promise<T> {
-    const method = arg.method;
-    const path = arg.path;
-    const body = arg.body;
-    const statusCode = arg.statusCode;
-    const params: any = {};
-    params.method = method;
-    params.url = Fotolife.BASE_URL + path;
-    if (this._type === 'oauth')
-      params.oauth = {
-        consumer_key: this._consumerKey,
-        consumer_secret: this._consumerSecret,
-        token: this._accessToken,
-        token_secret: this._accessTokenSecret
-      };
-    else { // this._type === 'wsse'
-      const token = wsse().getUsernameToken(this._username, this._apikey, {
-        nonceBase64: true
+    return (
+      typeof body !== 'undefined'
+        ? xmlObjectToXmlString(body) : Promise.resolve(null)
+    )
+      .then((bodyOrNull: string | null) => {
+        return requestPromise({
+          ...(bodyOrNull !== null ? { body: bodyOrNull } : {}),
+          ... (this._type !== 'oauth'
+            ? {
+              headers: {
+                'Authorization': 'WSSE profile="UsernameToken"',
+                'X-WSSE': 'UsernameToken ' +
+                  wsse()
+                    .getUsernameToken(
+                      this._username,
+                      this._apikey,
+                      { nonceBase64: true }
+                    )
+              }
+            } : {}),
+          method,
+          ...(this._type === 'oauth'
+            ? {
+              oauth: {
+                consumer_key: this._consumerKey,
+                consumer_secret: this._consumerSecret,
+                token: this._accessToken,
+                token_secret: this._accessTokenSecret
+              }
+            } : {}),
+          url: Fotolife.BASE_URL + path
+        });
+      }).then((res) => {
+        if (res.statusCode !== statusCode)
+          throw new Error('HTTP status code is ' + res.statusCode);
+        return xmlStringToObject(res.body);
       });
-      params.headers = {
-        'Authorization': 'WSSE profile="UsernameToken"',
-        'X-WSSE': 'UsernameToken ' + token
-      };
-    }
-    const promise: Promise<string | null> =
-      typeof body !== 'undefined' ? this._toXml(body) : Promise.resolve(null);
-    return promise.then((b) => {
-      if (b !== null)
-        params.body = b;
-      return requestPromise(params);
-    }).then((res) => {
-      if (res.statusCode !== statusCode)
-        throw new Error('HTTP status code is ' + res.statusCode);
-      return this._toJson(res.body);
-    });
-  }
-
-  private _toJson(xml: string): Promise<XMLObject> {
-    return new Promise((resolve, reject) => {
-      const parser = new xml2js.Parser({
-        explicitArray: false,
-        explicitCharkey: true
-      });
-      return parser.parseString(xml, (error, result) => {
-        if (error !== null)
-          return reject(error);
-        else
-          return resolve(result);
-      });
-    });
-  }
-
-  private _toXml(json: XMLObject): Promise<string> {
-    const builder = new xml2js.Builder();
-    try {
-      const xml = builder.buildObject(json);
-      return Promise.resolve(xml);
-    } catch (error) {
-      return Promise.reject(error);
-    }
   }
 }
 
