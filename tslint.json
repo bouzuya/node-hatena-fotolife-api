@@ -25,6 +25,7 @@
       "single",
       "jsx-double"
     ],
+    "triple-equals": true,
     "trailing-comma": [
       true,
       {
