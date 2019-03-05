@@ -24,6 +24,8 @@ interface FotolifeOptionsWSSE {
 
 type XMLObject = any;
 
+const reject = (s: string): Promise<never> => Promise.reject(new Error(s));
+
 // Hatena::Fotolife API wrapper
 //
 // - POST   PostURI (/atom/post)                => Fotolife#create
@@ -69,10 +71,7 @@ class Fotolife {
     const file = arg.file;
     const folder = arg.folder;
     const generator = arg.generator;
-    if (file == null)
-      return this._reject('options.file is required');
-    if (!fs.existsSync(file))
-      return this._reject('options.file does not exist');
+    if (!fs.existsSync(file)) return reject('options.file does not exist');
     const title = arg.title != null ? arg.title : '';
     const type = arg.type != null ? arg.type : mime.lookup(file);
     const encoded = fs.readFileSync(file).toString('base64');
@@ -116,10 +115,6 @@ class Fotolife {
   ): Promise<T> {
     const id = arg.id;
     const title = arg.title;
-    if (id == null)
-      return this._reject('options.id is required');
-    if (title == null)
-      return this._reject('options.title is required');
     const method = 'put';
     const path = '/atom/edit/' + id;
     const body = {
@@ -143,8 +138,6 @@ class Fotolife {
     }
   ): Promise<T> {
     const id = arg.id;
-    if (id == null)
-      return this._reject('options.id is required');
     const method = 'delete';
     const path = '/atom/edit/' + id;
     const statusCode = 200;
@@ -158,8 +151,6 @@ class Fotolife {
     }
   ): Promise<T> {
     const id = arg.id;
-    if (id == null)
-      return this._reject('options.id is required');
     const method = 'get';
     const path = '/atom/edit/' + id;
     const statusCode = 200;
@@ -172,10 +163,6 @@ class Fotolife {
     const path = '/atom/feed';
     const statusCode = 200;
     return this._request({ method, path, statusCode });
-  }
-
-  private _reject(message: string): Promise<never> {
-    return Promise.reject(new Error(message));
   }
 
   private _request(
