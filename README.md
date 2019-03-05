@@ -12,36 +12,16 @@ npm install hatena-fotolife-api
 
 See [`examples/`](examples/).
 
-### Coding style (Callback/Promise)
+```typescript
+import fotolife from 'hatena-fotolife-api';
 
-#### Callback style
+const client =
+  fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
+const options = { title: 'bouzuya\'s icon', file: './bouzuya.png' };
 
-```javascript
-var fotolife = require('hatena-fotolife-api');
-
-var client = fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
-var options = { title: 'bouzuya\'s icon', file: './bouzuya.png' };
-
-client.create(options, function(err) {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('uploaded');
-  }
-});
-```
-
-#### Promise style
-
-```javascript
-var fotolife = require('hatena-fotolife-api');
-
-var client = fotolife({ type: 'wsse', username: 'username', apikey: 'apikey' });
-var options = { title: 'bouzuya\'s icon', file: './bouzuya.png' };
-
-client.create(options).then(function() {
+client.create(options).then(() => {
   console.log('uploaded');
-}, function(err) {
+}, (err) => {
   console.error(err);
 });
 ```
