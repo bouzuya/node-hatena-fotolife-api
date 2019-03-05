@@ -110,7 +110,7 @@ class Fotolife {
       title?: string; // 'title'. image title. default `''`.
       type?: string; // 'type'. content-type. default `mime.lookup(file)`.
     }
-  ): Promise<T> {
+  ): Promise<any> { // FIXME
     if (!fs.existsSync(file)) return rejectE('options.file does not exist');
     return this._request({
       body: {
@@ -148,7 +148,7 @@ class Fotolife {
       id: string; // image id. (required)
       title: string; // 'title'. image title. (required)
     }
-  ): Promise<T> {
+  ): Promise<any> { // FIXME
     return this._request({
       body: {
         entry: {
@@ -171,7 +171,7 @@ class Fotolife {
     { id }: {
       id: string; // image id. (required)
     }
-  ): Promise<T> {
+  ): Promise<any> { // FIXME
     return this._request({
       method: 'delete',
       path: '/atom/edit/' + id,
@@ -184,7 +184,7 @@ class Fotolife {
     { id }: {
       id: string; // image id. (required)
     }
-  ): Promise<T> {
+  ): Promise<any> { // FIXME
     return this._request({
       method: 'get',
       path: '/atom/edit/' + id,
@@ -193,7 +193,7 @@ class Fotolife {
   }
 
   // GET FeedURI (/atom/feed)
-  public index(): Promise<T> {
+  public index(): Promise<any> { // FIXME
     return this._request({
       method: 'get',
       path: '/atom/feed',
