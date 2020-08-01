@@ -73,7 +73,7 @@ const xmlObjectToXmlString = (xmlObject: XMLObject): Promise<string> => {
 // - GET    EditURI (/atom/edit/XXXXXXXXXXXXXX) => Fotolife#show
 // - GET    FeedURI (/atom/feed)                => Fotolife#index
 class Fotolife {
-  private static BASE_URL = 'http://f.hatena.ne.jp';
+  private static BASE_URL = 'https://f.hatena.ne.jp';
   private _type: 'oauth' | 'wsse';
   private _username: string | null;
   private _apikey: string | null;
