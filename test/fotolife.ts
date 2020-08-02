@@ -1,8 +1,11 @@
-import { Test, test } from "beater";
+import { Test } from "beater";
+import { named } from "beater-helpers";
 import path from "path";
 import assert from "power-assert";
 import sinon from "sinon";
 import { Fotolife } from "../src/fotolife";
+
+const test = named;
 
 const category = "/fotolife ";
 const tests: Test[] = [
