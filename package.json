@@ -24,11 +24,11 @@
     "url": "https://github.com/bouzuya/node-hatena-fotolife-api/issues"
   },
   "dependencies": {
-    "mime": "^2.4.0",
+    "mime": "^2.4.6",
     "oauth": "^0.9.12",
-    "request": "^2.40.0",
-    "wsse": "^3.0.0",
-    "xml2js": "^0.4.19"
+    "request": "^2.88.2",
+    "wsse": "^5.1.0",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
