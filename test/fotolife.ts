@@ -11,8 +11,11 @@ const tests: Test[] = [
       apikey: "apikey",
       username: "username",
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._type === "wsse");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._username === "username");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._apikey === "apikey");
   }),
 
@@ -24,15 +27,21 @@ const tests: Test[] = [
       consumerSecret: "consumerSecret",
       type: "oauth",
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._type === "oauth");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._accessToken === "accessToken");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._accessTokenSecret === "accessTokenSecret");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._consumerKey === "consumerKey");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assert((fotolife as any)._consumerSecret === "consumerSecret");
   }),
 
   test(category + "create (happy path)", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",
@@ -55,6 +64,7 @@ const tests: Test[] = [
 
   test(category + "create (with all options)", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",
@@ -83,6 +93,7 @@ const tests: Test[] = [
 
   test(category + "create (file does not exist)", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",
@@ -100,6 +111,7 @@ const tests: Test[] = [
 
   test(category + "update (with all options)", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",
@@ -117,6 +129,7 @@ const tests: Test[] = [
 
   test(category + "destroy (with all options)", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",
@@ -132,6 +145,7 @@ const tests: Test[] = [
 
   test(category + "show", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",
@@ -147,6 +161,7 @@ const tests: Test[] = [
 
   test(category + "index", () => {
     const request = sinon.stub().returns(Promise.resolve());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Fotolife.prototype as any)._request = request;
     const fotolife = new Fotolife({
       apikey: "apikey",

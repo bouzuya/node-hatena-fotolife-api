@@ -20,6 +20,7 @@ interface FotolifeOptionsWSSE {
   username: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type XMLObject = any;
 
 const rejectE = (s: string): Promise<never> => Promise.reject(new Error(s));
@@ -41,6 +42,7 @@ const xmlStringToObject = (xmlString: string): Promise<XMLObject> => {
       explicitArray: false,
       explicitCharkey: true,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return parser.parseString(xmlString, (error: Error | null, result: any) => {
       if (error !== null) return reject(error);
       else return resolve(result);
@@ -107,6 +109,7 @@ class Fotolife {
     generator?: string; // 'generator'. tool name. default `undefined`.
     title?: string; // 'title'. image title. default `''`.
     type?: string; // 'type'. content-type. default `mime.lookup(file)`.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any> {
     // FIXME
     if (!fs.existsSync(file)) return rejectE("options.file does not exist");
@@ -150,6 +153,7 @@ class Fotolife {
   }: {
     id: number; // image id. (required)
     title: string; // 'title'. image title. (required)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any> {
     // FIXME
     return this._request({
@@ -174,6 +178,7 @@ class Fotolife {
     id,
   }: {
     id: number; // image id. (required)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any> {
     // FIXME
     return this._request({
@@ -188,6 +193,7 @@ class Fotolife {
     id,
   }: {
     id: number; // image id. (required)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): Promise<any> {
     // FIXME
     return this._request({
@@ -198,6 +204,7 @@ class Fotolife {
   }
 
   // GET FeedURI (/atom/feed)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public index(): Promise<any> {
     // FIXME
     return this._request({
@@ -231,7 +238,9 @@ class Fotolife {
                 headers: {
                   Authorization: 'WSSE profile="UsernameToken"',
                   "X-WSSE": wsse({
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     password: this._apikey!,
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     username: this._username!,
                   }).getWSSEHeader({ nonceBase64: true }),
                 },
@@ -241,9 +250,13 @@ class Fotolife {
           ...(this._type === "oauth"
             ? {
                 oauth: {
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   consumer_key: this._consumerKey!,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   consumer_secret: this._consumerSecret!,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   token: this._accessToken!,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   token_secret: this._accessTokenSecret!,
                 },
               }
