@@ -1,10 +1,7 @@
 language: node_js
 node_js:
   - "node"
+  - "12"
   - "10"
-  - "8"
-  - "6"
-before_install:
-  - npm i -g npm@latest # node.js v6
 after_success:
   - npm run coveralls
